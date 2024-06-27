@@ -3,7 +3,6 @@ package com.lec.controller;
 import com.lec.model.domain.Lecture;
 import com.lec.model.dto.LectureUserDto;
 import com.lec.service.LectureService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,7 @@ public class LectureController {
     private final LectureService lectureService;
 
     @PostMapping("/apply")
-    public void applyLecture(@Valid @RequestBody LectureUserDto lectureUserDto) {
+    public void applyLecture(@RequestBody LectureUserDto lectureUserDto) {
         this.lectureService.applyLecture(lectureUserDto.getLectureId(), lectureUserDto.getUserId());
     }
 

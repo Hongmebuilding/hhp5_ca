@@ -2,7 +2,6 @@ package com.lec.controller;
 
 import com.lec.model.dto.CreateLectureDto;
 import com.lec.service.LectureService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

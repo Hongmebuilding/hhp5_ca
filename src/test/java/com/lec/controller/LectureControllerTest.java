@@ -39,7 +39,7 @@ public class LectureControllerTest{
 
     @Test
     public void testCreateLecture() throws Exception {
-        LocalDateTime time = LocalDateTime.of(2024, Month.DECEMBER, 11, 13, 30)
+        LocalDateTime time = LocalDateTime.of(2024, Month.DECEMBER, 11, 13, 30);
 
         CreateLectureDto createLectureDto = new CreateLectureDto(
                 "아이고...",

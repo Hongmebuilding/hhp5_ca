@@ -23,7 +23,7 @@ public class LectureRepositoryImpl implements LectureRepository {
 
     @Override
     public Lecture findById(Long lectureId) {
-        return jpaRepository.findById(lectureId)
+        return jpaRepository.findByIdFetch(lectureId)
                 .orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, ErrorCode.NO_DATA))
                 .to();
     }

@@ -18,6 +18,10 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NamedEntityGraph(
+        name = "lectureApplications",
+        attributeNodes = @NamedAttributeNode("lectureApplications")
+)
 public class LectureEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

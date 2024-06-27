@@ -20,20 +20,21 @@ import java.util.List;
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;
     private final LectureValidator validator;
+
     @Override
     @Transactional
     public void applyLecture(Long lectureId, Long userId) {
-        Lecture lecture = lectureRepository.findById(lectureId);
+        Lecture lecture = lectureRepository.findByIdFetch(lectureId);
         if (lecture == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.NO_DATA);
         }
-
-        //TODO jpql
+        if (lecture.isLectureFull()) {
+            throw new CustomException(HttpStatus.CONFLICT, ErrorCode.NO_DATA);
+        }
         List<LectureApplication> registrationList = lectureRepository.getLectureRegistrationList(lectureId);
         validator.validateLectureApplication(lecture, registrationList, userId);
 
         lecture.addCnt();
-
         boolean isSaved = lectureRepository.saveLectureApplication(lecture, userId);
         if (!isSaved) {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.FAIL);

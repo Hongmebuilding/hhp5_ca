@@ -21,8 +21,9 @@ public class LectureRepositoryImpl implements LectureRepository {
     private final LectureJpaRepository jpaRepository;
     private final LectureApplicationJpaRepository lectureApplicationJpaRepository;
 
+
     @Override
-    public Lecture findById(Long lectureId) {
+    public Lecture findByIdFetch(Long lectureId) {
         return jpaRepository.findByIdFetch(lectureId)
                 .orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, ErrorCode.NO_DATA))
                 .to();
@@ -51,7 +52,7 @@ public class LectureRepositoryImpl implements LectureRepository {
 
     @Override
     public List<LectureApplication> getLectureRegistrationList(Long lectureId) {
-        return jpaRepository.findById(lectureId)
+        return jpaRepository.findByIdFetch(lectureId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.NO_DATA))
                 .getLectureApplications().stream()
                 .map(LectureApplicationEntity::to)

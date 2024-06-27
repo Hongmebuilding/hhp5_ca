@@ -6,7 +6,7 @@ import com.lec.model.domain.LectureApplication;
 import java.util.List;
 
 public interface LectureRepository {
-    Lecture findById(Long lectureId);
+    Lecture findByIdFetch(Long lectureId);
     boolean save(Lecture lecture);
     List<Lecture> findAll();
     boolean isEnrolled(Long userId, Long lectureId);

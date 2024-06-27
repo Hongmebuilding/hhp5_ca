@@ -18,10 +18,10 @@ public class LectureValidator {
         if (isUserAlreadyApplied(registrationList, userId)) {
             throw new CustomException(HttpStatus.CONFLICT, ErrorCode.ALREADY_APPLIED);
         }
-
-        if (isLectureFull(lecture)) {
+        if (lecture.isLectureFull()) {
             throw new CustomException(HttpStatus.INSUFFICIENT_STORAGE, ErrorCode.LECTURE_FULL);
         }
+        lecture.addCnt();
     }
 
     private boolean isUserAlreadyApplied(List<LectureApplication> registrationList, Long userId) {
@@ -29,7 +29,4 @@ public class LectureValidator {
                 .anyMatch(v -> v.getUserId().equals(userId));
     }
 
-    private boolean isLectureFull(Lecture lecture) {
-        return lecture.getCount() >= lecture.getCapacity();
-    }
 }

@@ -1,17 +1,21 @@
 package com.lec.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lec.exception.CustomException;
 import com.lec.model.domain.Lecture;
+import com.lec.model.vo.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Builder
 @Setter
 @Entity
 @Table(name = "lecture")
@@ -65,7 +69,10 @@ public class LectureEntity {
     }
 
     @PrePersist
-    public void defaultData() {
+    public void initialize() {
+        if (title == null || capacity == null || startDate == null) {
+            throw new CustomException(HttpStatus.NO_CONTENT, ErrorCode.Illegal_ARGUMENT);
+        }
         count = 0;
         createdAt = LocalDateTime.now();
     }

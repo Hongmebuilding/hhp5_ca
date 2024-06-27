@@ -5,13 +5,12 @@ import com.lec.model.domain.LectureApplication;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
+@Builder
 @Entity
 @Table(name = "LectureApplication")
 @EntityListeners(AuditingEntityListener.class)
@@ -30,13 +29,13 @@ public class LectureApplicationEntity {
     @JoinColumn(name = "lecture_id")
     private LectureEntity lecture;
 
-    @CreatedDate
     private LocalDateTime createdAt;
 
     public static LectureApplicationEntity from(LectureApplication application) {
-        LectureApplicationEntity entity = new LectureApplicationEntity();
-        entity.setId(application.getId());
-        entity.setUserId(application.getUserId());
+        LectureApplicationEntity entity = LectureApplicationEntity.builder()
+                .id(application.getId())
+                .userId(application.getUserId())
+                .build();
         // lecture 설정은 별도로 해야 함
         return entity;
     }
@@ -55,5 +54,10 @@ public class LectureApplicationEntity {
         lectureApplication.setId(this.id);
         lectureApplication.setUserId(this.userId);
         return lectureApplication;
+    }
+
+    @PrePersist
+    public void defaultData() {
+        createdAt = LocalDateTime.now();
     }
 }

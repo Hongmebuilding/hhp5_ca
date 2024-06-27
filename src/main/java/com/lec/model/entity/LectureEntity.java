@@ -5,7 +5,6 @@ import com.lec.model.domain.Lecture;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ public class LectureEntity {
 
     private LocalDateTime startDate;
 
-    @CreatedDate
     private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -65,5 +63,6 @@ public class LectureEntity {
     @PrePersist
     public void defaultData() {
         count = 0;
+        createdAt = LocalDateTime.now();
     }
 }

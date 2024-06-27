@@ -15,7 +15,7 @@ public class AdminLectureController {
     private final LectureService lectureService;
 
     @PostMapping
-    public boolean addLecture(@RequestBody CreateLectureDto lecture) {
-        return lectureService.addLecture(lecture);
+    public void addLecture(@RequestBody CreateLectureDto lecture) {
+        lectureService.addLecture(lecture);
     }
 }

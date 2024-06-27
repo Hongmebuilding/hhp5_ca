@@ -12,5 +12,5 @@ public interface LectureService {
 
     boolean isEnrolled(Long userId, Long lectureId);
 
-    boolean addLecture(CreateLectureDto lecture);
+    void addLecture(CreateLectureDto lecture);
 }

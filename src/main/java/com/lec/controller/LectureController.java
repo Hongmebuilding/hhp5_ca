@@ -27,7 +27,7 @@ public class LectureController {
     }
 
     @GetMapping("/application/{userId}")
-    public boolean isEnrolled(@PathVariable Long userId, @RequestParam Long lectureId) {
-        return this.lectureService.isEnrolled(userId, lectureId);
+    public void isEnrolled(@PathVariable Long userId, @RequestParam Long lectureId) {
+        lectureService.isEnrolled(userId, lectureId);
     }
 }

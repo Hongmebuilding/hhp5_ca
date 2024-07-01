@@ -1,6 +1,7 @@
 package com.lec.controller;
 
 import com.lec.model.domain.Lecture;
+import com.lec.model.dto.CreateLectureDto;
 import com.lec.model.dto.LectureUserDto;
 import com.lec.service.LectureService;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,10 @@ public class LectureController {
     @GetMapping("/application/{userId}")
     public void isEnrolled(@PathVariable Long userId, @RequestParam Long lectureId) {
         lectureService.isEnrolled(userId, lectureId);
+    }
+
+    @PostMapping
+    public void addLecture(@RequestBody CreateLectureDto lecture) {
+        lectureService.addLecture(lecture);
     }
 }

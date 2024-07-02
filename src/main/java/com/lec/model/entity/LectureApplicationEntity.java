@@ -1,17 +1,18 @@
 package com.lec.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lec.exception.CustomException;
 import com.lec.model.domain.LectureApplication;
+import com.lec.model.vo.ErrorCode;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
+@Builder
 @Entity
 @Table(name = "LectureApplication")
 @EntityListeners(AuditingEntityListener.class)
@@ -22,7 +23,6 @@ public class LectureApplicationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,16 +30,8 @@ public class LectureApplicationEntity {
     @JoinColumn(name = "lecture_id")
     private LectureEntity lecture;
 
-    @CreatedDate
     private LocalDateTime createdAt;
 
-    public static LectureApplicationEntity from(LectureApplication application) {
-        LectureApplicationEntity entity = new LectureApplicationEntity();
-        entity.setId(application.getId());
-        entity.setUserId(application.getUserId());
-        // lecture 설정은 별도로 해야 함
-        return entity;
-    }
 
     public LectureApplication to() {
         LectureApplication application = new LectureApplication();
@@ -50,10 +42,11 @@ public class LectureApplicationEntity {
         return application;
     }
 
-    public LectureApplication of() {
-        LectureApplication lectureApplication = new LectureApplication();
-        lectureApplication.setId(this.id);
-        lectureApplication.setUserId(this.userId);
-        return lectureApplication;
+    @PrePersist
+    public void initialize() {
+        if (userId == null || lecture == null) {
+            throw new CustomException(HttpStatus.NO_CONTENT, ErrorCode.Illegal_ARGUMENT);
+        }
+        createdAt = LocalDateTime.now();
     }
 }

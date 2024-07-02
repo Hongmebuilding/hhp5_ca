@@ -10,6 +10,7 @@ import com.lec.service.LectureService;
 import com.lec.validation.LectureValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,19 +20,25 @@ import java.util.List;
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;
     private final LectureValidator validator;
+
     @Override
     @Transactional
     public void applyLecture(Long lectureId, Long userId) {
-        Lecture lecture = lectureRepository.findById(lectureId);
+        Lecture lecture = lectureRepository.findByIdFetch(lectureId);
         if (lecture == null) {
-            throw new CustomException(ErrorCode.NO_DATA);
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.NO_DATA);
         }
-
+        if (lecture.isLectureFull()) {
+            throw new CustomException(HttpStatus.CONFLICT, ErrorCode.NO_DATA);
+        }
         List<LectureApplication> registrationList = lectureRepository.getLectureRegistrationList(lectureId);
         validator.validateLectureApplication(lecture, registrationList, userId);
 
         lecture.addCnt();
-        lectureRepository.save(lecture);
+        boolean isSaved = lectureRepository.saveLectureApplication(lecture, userId);
+        if (!isSaved) {
+            throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.FAIL);
+        }
     }
 
     @Override
@@ -46,9 +53,11 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional
-    public boolean addLecture(CreateLectureDto lecture) {
-        Lecture lecture1 = new Lecture(lecture);
-        lectureRepository.save(lecture1);
-        return false;
+    public void addLecture(CreateLectureDto lectureDto) {
+        Lecture lecture = new Lecture(lectureDto);
+        boolean isSaved = lectureRepository.save(lecture);
+        if (!isSaved) {
+            throw new CustomException(HttpStatus.FORBIDDEN, ErrorCode.FAIL);
+        }
     }
 }

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -31,4 +30,7 @@ public class Lecture {
         this.count += 1;
     }
 
+    public boolean isLectureFull() {
+        return this.getCount() >= this.getCapacity();
+    }
 }

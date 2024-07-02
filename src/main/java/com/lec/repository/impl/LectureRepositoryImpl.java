@@ -6,9 +6,11 @@ import com.lec.model.domain.LectureApplication;
 import com.lec.model.entity.LectureApplicationEntity;
 import com.lec.model.entity.LectureEntity;
 import com.lec.model.vo.ErrorCode;
+import com.lec.repository.LectureApplicationJpaRepository;
 import com.lec.repository.LectureJpaRepository;
 import com.lec.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,19 +19,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LectureRepositoryImpl implements LectureRepository {
     private final LectureJpaRepository jpaRepository;
+    private final LectureApplicationJpaRepository lectureApplicationJpaRepository;
+
 
     @Override
-    public Lecture findById(Long lectureId) {
-        return jpaRepository.findById(lectureId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_DATA))
+    public Lecture findByIdFetch(Long lectureId) {
+        return jpaRepository.findByIdFetch(lectureId)
+                .orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, ErrorCode.NO_DATA))
                 .to();
     }
 
     @Override
-    public LectureEntity save(Lecture lecture) {
+    public boolean save(Lecture lecture) {
         LectureEntity lectureEntity = LectureEntity.from(lecture);
-        jpaRepository.save(lectureEntity);
-        return lectureEntity;
+        LectureEntity savedEntity = jpaRepository.save(lectureEntity);
+        return savedEntity.getId() != null;
     }
 
     @Override
@@ -41,17 +45,33 @@ public class LectureRepositoryImpl implements LectureRepository {
     @Override
     public boolean isEnrolled(Long userId, Long lectureId) {
         return jpaRepository.findById(lectureId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_DATA))
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.NO_DATA))
                 .getLectureApplications().stream()
                 .anyMatch(v -> v.getUserId().equals(userId));
     }
 
     @Override
     public List<LectureApplication> getLectureRegistrationList(Long lectureId) {
-        return jpaRepository.findById(lectureId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_DATA))
+        return jpaRepository.findByIdFetch(lectureId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.NO_DATA))
                 .getLectureApplications().stream()
                 .map(LectureApplicationEntity::to)
                 .toList();
     }
+
+    @Override
+    public boolean saveLectureApplication(Lecture lecture, Long userId) {
+        LectureEntity lectureEntity = jpaRepository.findById(lecture.getLectureId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.NO_DATA));
+
+        LectureApplicationEntity applicationEntity = LectureApplicationEntity.builder()
+                .userId(userId)
+                .lecture(lectureEntity)
+                .build();
+
+        LectureApplicationEntity savedApplication = lectureApplicationJpaRepository.save(applicationEntity);
+
+        return savedApplication.getId() != null;
+    }
+
 }
